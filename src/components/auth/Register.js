@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import setAuthToken from '../../utils/setAuthToken';
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     password2: '',
   });
 
-  const { name, email, password, password2 } = formData;
+  const { username, email, password, password2 } = formData;
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,7 +23,7 @@ const Register = () => {
       console.log('Passwords do not match');
     } else {
       const newUser = {
-        name,
+        username,
         email,
         password,
       };
@@ -38,6 +39,8 @@ const Register = () => {
 
         const res = await axios.post('/api/auth/register', body, config);
         console.log(res.data);
+        localStorage.setItem('token', res.data.token);
+        setAuthToken(res.data.token);
         navigate('/login');
       } catch (err) {
         console.error(err.response.data);
@@ -65,8 +68,8 @@ const Register = () => {
               id="name"
               type="text"
               placeholder="Name"
-              name="name"
-              value={name}
+              name="username"
+              value={username}
               onChange={onChange}
               required
             />

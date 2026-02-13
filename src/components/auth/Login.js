@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import setAuthToken from '../../utils/setAuthToken';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const Login = () => {
 
       const res = await axios.post('/api/auth/login', body, config);
       localStorage.setItem('token', res.data.token);
+      setAuthToken(res.data.token);
       console.log(res.data);
       navigate('/');
     } catch (err) {

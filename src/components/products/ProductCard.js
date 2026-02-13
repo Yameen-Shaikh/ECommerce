@@ -1,23 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { useCart } from '../../context/CartContext'; // Import useCart
 
 const ProductCard = ({ product }) => {
-  const handleAddToCart = async () => {
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': localStorage.getItem('token'),
-        },
-      };
-      const body = JSON.stringify({ productId: product._id });
-      await axios.post('/api/cart', body, config);
-      alert('Product added to cart!');
-    } catch (err) {
-      console.error(err);
-      alert('Failed to add product to cart.');
-    }
+  const { addToCart } = useCart(); // Use CartContext
+
+  const handleAddToCart = () => {
+    addToCart(product._id, 1); // Use addToCart from context
   };
 
   return (

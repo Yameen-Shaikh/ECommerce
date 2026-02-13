@@ -1,59 +1,34 @@
 import React from 'react';
-import axios from 'axios';
 
-const CartItem = ({ item, refreshCart }) => {
-  const handleUpdateQuantity = async (newQuantity) => {
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': localStorage.getItem('token'),
-        },
-      };
-      const body = JSON.stringify({ productId: item.product._id, quantity: newQuantity });
-      await axios.post('/api/cart', body, config);
-      refreshCart();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to update quantity.');
-    }
+const CartItem = ({ item, updateCartItemQuantity, removeCartItem }) => { // Destructure new props
+  const handleUpdateQuantity = (newQuantity) => {
+    updateCartItemQuantity(item.product, newQuantity); // Call context function
   };
 
-  const handleRemoveItem = async () => {
-    try {
-      const config = {
-        headers: {
-          'x-auth-token': localStorage.getItem('token'),
-        },
-      };
-      await axios.delete(`/api/cart/${item.product._id}`, config);
-      refreshCart();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to remove item.');
-    }
+  const handleRemoveItem = () => {
+    removeCartItem(item.product); // Call context function
   };
 
   return (
     <div className="flex items-center border-b border-gray-200 py-4">
-      <img src={item.product.imageUrl} alt={item.product.name} className="w-24 h-24 object-cover mr-4" />
+      <img src={item.image} alt={item.name} className="w-24 h-24 object-cover mr-4" />
       <div className="flex-1">
-        <h3 className="text-lg font-bold">{item.product.name}</h3>
-        <p className="text-gray-600">${item.product.price}</p>
-        <p className="text-gray-600">Quantity: {item.quantity}</p>
+        <h3 className="text-lg font-bold">{item.name}</h3>
+        <p className="text-gray-600">₹{item.price.toFixed(2)}</p>
+        <p className="text-gray-600">Quantity: {item.qty}</p>
       </div>
       <div className="flex items-center">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm"
-          onClick={() => handleUpdateQuantity(item.quantity - 1)}
-          disabled={item.quantity === 1}
+          onClick={() => handleUpdateQuantity(item.qty - 1)}
+          disabled={item.qty === 1}
         >
           -
         </button>
-        <span className="mx-2">{item.quantity}</span>
+        <span className="mx-2">{item.qty}</span>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm"
-          onClick={() => handleUpdateQuantity(item.quantity + 1)}
+          onClick={() => handleUpdateQuantity(item.qty + 1)}
         >
           +
         </button>

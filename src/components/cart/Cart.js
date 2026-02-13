@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CartItem from './CartItem';
+import { useCart } from '../../context/CartContext'; // Import useCart
 
 const Cart = () => {
-  const [cart, setCart] = useState({ items: [] });
-
-  const fetchCart = async () => {
-    try {
-      const res = await axios.get('/api/cart', {
-        headers: {
-          'x-auth-token': localStorage.getItem('token'), // Assuming token is stored in localStorage
-        },
-      });
-      setCart(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const { cart, cartTotal, fetchCart, updateCartItemQuantity, removeCartItem } = useCart(); // Use CartContext
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    fetchCart(); // Fetch cart when component mounts
+  }, [fetchCart]); // Depend on fetchCart
+
+  const handleProceedToCheckout = () => {
+    navigate('/checkout');
+  };
 
   return (
     <div className="container mx-auto mt-10">
@@ -30,10 +23,19 @@ const Cart = () => {
       ) : (
         <div className="flex flex-col">
           {cart.items.map((item) => (
-            <CartItem key={item.product._id} item={item} refreshCart={fetchCart} />
+            <CartItem
+              key={item.product._id}
+              item={item}
+              updateCartItemQuantity={updateCartItemQuantity} // Pass from context
+              removeCartItem={removeCartItem} // Pass from context
+            />
           ))}
           <div className="flex justify-end mt-5">
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <h2 className="text-2xl font-bold mr-4">Total: ₹{cartTotal.toFixed(2)}</h2>
+            <button
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              onClick={handleProceedToCheckout}
+            >
               Proceed to Checkout
             </button>
           </div>
