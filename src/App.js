@@ -8,6 +8,7 @@ import ProductList from './components/products/ProductList';
 import ProductDetails from './components/products/ProductDetails';
 import Cart from './components/cart/Cart';
 import Checkout from './components/pages/Checkout';
+import OrderSuccess from './components/pages/OrderSuccess'; // Import OrderSuccess
 import { useEffect } from 'react';
 import setAuthToken from './utils/setAuthToken';
 import { CartProvider } from './context/CartContext';
@@ -38,6 +39,7 @@ function App() {
               <Route path="/products/:id" element={<ProductDetails />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/ordersuccess" element={<OrderSuccess />} /> {/* Add new route */}
             </Routes>
           </CartProvider>
         </main>

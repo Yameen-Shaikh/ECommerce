@@ -20,7 +20,7 @@ This document summarizes the current status of the e-commerce client project, as
 - Created layout components (Header, Footer).
 - Created authentication components (Login, Register).
 - Created product components (ProductList, ProductCard, ProductDetails).
-- Created pages (Home, Checkout).
+- Created pages (Home, Checkout, OrderSuccess).
 - Implemented routing with React Router.
 - The default route (`/`) now displays the `ProductList` component.
 - Updated `src/data/products.js` with real image URLs (for consistency).
@@ -31,6 +31,13 @@ This document summarizes the current status of the e-commerce client project, as
     - Aligned "View Details" link and "Add to Cart" button vertically, one above the other.
 - Modified `ProductDetails` component:
     - Changed price currency symbol from `$` to `₹`.
+- Modified `Checkout.js`:
+    - Updated the `handleCheckout` function to pass the `orderId` to the `/ordersuccess` route.
+- Modified `OrderSuccess.js`:
+    - Refactored to fetch order details based on `orderId` passed from `Checkout.js`.
+    - Displays order summary, shipping address, and total price.
+    - Added a confetti effect for a celebratory visual.
+    - Added "Go to My Orders" link.
 
 ## Backend Integration
 - The frontend is now integrated with the newly created backend to fetch product data.

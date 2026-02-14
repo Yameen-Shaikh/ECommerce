@@ -72,9 +72,8 @@ const Checkout = () => {
       const res = await axios.post('/api/orders', orderData, config);
 
       if (res.data) {
-        alert('Order placed successfully!');
         clearCart();
-        navigate('/'); // Navigate to home or an order confirmation page
+        navigate('/ordersuccess', { state: { orderId: res.data._id } }); // Pass orderId to the new order success page
       }
     } catch (err) {
       console.error('Checkout error:', err.response ? err.response.data : err);
