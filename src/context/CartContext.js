@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const CartContext = createContext();
@@ -10,7 +10,7 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -30,13 +30,13 @@ export const CartProvider = ({ children }) => {
       setLoading(false);
       console.error('Error fetching cart:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
-  const addToCart = async (productId, quantity = 1) => {
+  const addToCart = useCallback(async (productId, quantity = 1) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -58,9 +58,9 @@ export const CartProvider = ({ children }) => {
       console.error('Error adding to cart:', err.response ? err.response.data : err);
       alert('Failed to add item to cart.');
     }
-  };
+  }, []);
 
-  const updateCartItemQuantity = async (productId, quantity) => {
+  const updateCartItemQuantity = useCallback(async (productId, quantity) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -81,9 +81,9 @@ export const CartProvider = ({ children }) => {
       console.error('Error updating cart item quantity:', err);
       alert('Failed to update cart item quantity.');
     }
-  };
+  }, []);
 
-  const removeCartItem = async (productId) => {
+  const removeCartItem = useCallback(async (productId) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -102,12 +102,12 @@ export const CartProvider = ({ children }) => {
       console.error('Error removing cart item:', err);
       alert('Failed to remove item from cart.');
     }
-  };
+  }, []);
 
-  const clearCart = async () => {
+  const clearCart = useCallback(async () => {
     setCart({ items: [] }); // Optimistic update
     // In a real app, you might want to call a backend endpoint to clear the cart
-  };
+  }, []);
 
   const cartTotal = cart.items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const cartItemCount = cart.items.reduce((acc, item) => acc + item.qty, 0);

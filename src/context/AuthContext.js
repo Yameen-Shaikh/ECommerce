@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useEffect } from 'react';
+import React, { createContext, useReducer, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken';
 
@@ -12,10 +12,8 @@ const initialState = {
 };
 
 function authReducer(state, action) {
-  console.log('AuthReducer - Action:', action.type, 'Payload:', action.payload);
   switch (action.type) {
     case 'USER_LOADED':
-      console.log('AuthReducer - USER_LOADED, user:', action.payload);
       return {
         ...state,
         isAuthenticated: true,
@@ -25,7 +23,6 @@ function authReducer(state, action) {
     case 'REGISTER_SUCCESS':
     case 'LOGIN_SUCCESS':
       localStorage.setItem('token', action.payload.token);
-      console.log('AuthReducer - LOGIN/REGISTER_SUCCESS, token:', action.payload.token);
       return {
         ...state,
         ...action.payload,
@@ -37,7 +34,6 @@ function authReducer(state, action) {
     case 'LOGIN_FAIL':
     case 'LOGOUT':
       localStorage.removeItem('token');
-      console.log('AuthReducer - AUTH_ERROR/FAIL/LOGOUT');
       return {
         ...state,
         token: null,
@@ -53,16 +49,8 @@ function authReducer(state, action) {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  console.log('AuthContext - Current State:', state);
-
-  useEffect(() => {
-    console.log('AuthContext - useEffect triggered, calling loadUser()');
-    loadUser();
-  }, []);
-
   // Load User
-  const loadUser = async () => {
-    console.log('loadUser - checking localStorage.token:', localStorage.token);
+  const loadUser = useCallback(async () => {
     if (localStorage.token) {
       setAuthToken(localStorage.token);
     } else {
@@ -71,8 +59,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      console.log('loadUser - making axios.get(/api/auth)');
-      const res = await axios.get('/api/auth'); // This route is not yet implemented in backend, need to add it.
+      const res = await axios.get('/api/auth');
       dispatch({
         type: 'USER_LOADED',
         payload: res.data,
@@ -83,10 +70,14 @@ export const AuthProvider = ({ children }) => {
         type: 'AUTH_ERROR',
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   // Register User
-  const register = async (formData) => {
+  const register = useCallback(async (formData) => {
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -106,10 +97,10 @@ export const AuthProvider = ({ children }) => {
         type: 'REGISTER_FAIL',
       });
     }
-  };
+  }, [loadUser]);
 
   // Login User
-  const login = async (formData) => {
+  const login = useCallback(async (formData) => {
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -129,13 +120,12 @@ export const AuthProvider = ({ children }) => {
         type: 'LOGIN_FAIL',
       });
     }
-  };
+  }, [loadUser]);
 
   // Logout
-  const logout = () => {
-    console.log('Logout action dispatched');
+  const logout = useCallback(() => {
     dispatch({ type: 'LOGOUT' });
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

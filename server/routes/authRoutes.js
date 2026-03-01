@@ -75,8 +75,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // @desc    Get authenticated user profile
 // @route   GET /api/auth
 // @access  Private
@@ -88,3 +86,5 @@ router.get('/', protect, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+module.exports = router;
