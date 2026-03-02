@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import setAuthToken from '../../utils/setAuthToken';
+import AuthContext from '../../context/AuthContext';
 
 const Login = () => {
+  const { login, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -12,32 +12,20 @@ const Login = () => {
 
   const { email, password } = formData;
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const user = {
-      email,
-      password,
-    };
-
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-
-      const body = JSON.stringify(user);
-
-      const res = await axios.post('/api/auth/login', body, config);
-      localStorage.setItem('token', res.data.token);
-      setAuthToken(res.data.token);
-      console.log(res.data);
-      navigate('/');
-    } catch (err) {
-      console.error(err.response.data);
+    const success = await login({ email, password });
+    if (success) {
+      alert('Login successful!');
     }
   };
 

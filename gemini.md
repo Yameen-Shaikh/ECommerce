@@ -41,4 +41,14 @@ This document summarizes the current status of the e-commerce client project, as
 
 ## Backend Integration
 - The frontend is now integrated with the newly created backend to fetch product data.
-- The authentication, cart, and checkout functionalities in the frontend still rely on a more complete backend implementation.
+- **Fixed Authentication State Management**:
+    - Refactored `AuthContext.js` to use a consistent state structure and correctly handle user data during login/register.
+    - Updated `Login.js` and `Register.js` to use the global `login` and `register` functions from `AuthContext`, ensuring immediate state updates across the app.
+    - Modified `Header.js` to reflect the authentication state (shows user greeting and Logout button when logged in).
+    - Added automatic redirection in `Login.js` and `Register.js` if the user is already authenticated.
+    - Improved error handling with visual feedback (alerts) for failed login/registration attempts.
+    - Added success messages (alerts) and redirects:
+        - Successful registration now shows a success alert and redirects to the Login page.
+        - Successful login now shows a success alert and redirects to the Home page.
+    - Updated `CartContext.js` to re-fetch the user's cart whenever the authentication state changes.
+    - Cleaned up redundant token management in `App.js`.

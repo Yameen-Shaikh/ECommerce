@@ -10,11 +10,23 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
-  try {
-    const userExists = await User.findOne({ email });
+  console.log('Registration attempt:', { username, email });
 
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'Please provide all fields' });
+  }
+
+  try {
+    const userEmailExists = await User.findOne({ email });
+    if (userEmailExists) {
+      console.log('Registration failed: Email already exists');
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+
+    const userNameExists = await User.findOne({ username });
+    if (userNameExists) {
+      console.log('Registration failed: Username already exists');
+      return res.status(400).json({ message: 'Username already in use' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -25,6 +37,8 @@ router.post('/register', async (req, res) => {
       email,
       password: hashedPassword,
     });
+
+    console.log('User registered successfully:', user._id);
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
@@ -38,6 +52,7 @@ router.post('/register', async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error('Registration error details:', error);
     res.status(500).json({ message: error.message });
   }
 });

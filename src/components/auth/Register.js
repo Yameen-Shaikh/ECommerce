@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import setAuthToken from '../../utils/setAuthToken';
+import AuthContext from '../../context/AuthContext';
 
 const Register = () => {
+  const { register, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
@@ -14,36 +14,28 @@ const Register = () => {
 
   const { username, email, password, password2 } = formData;
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
-      console.log('Passwords do not match');
+      alert('Passwords do not match');
     } else {
-      const newUser = {
+      const success = await register({
         username,
         email,
         password,
-      };
-
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        };
-
-        const body = JSON.stringify(newUser);
-
-        const res = await axios.post('/api/auth/register', body, config);
-        console.log(res.data);
-        localStorage.setItem('token', res.data.token);
-        setAuthToken(res.data.token);
+      });
+      if (success) {
+        alert('Registration successful! Please login.');
         navigate('/login');
-      } catch (err) {
-        console.error(err.response.data);
       }
     }
   };

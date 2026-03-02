@@ -1,48 +1,54 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from './AuthContext';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+  const { isAuthenticated, token } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [cart, setCart] = useState({ items: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchCart = useCallback(async () => {
+    if (!isAuthenticated || !token) {
+      setCart({ items: [] });
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const res = await axios.get('/api/cart', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCart(res.data);
-      } else {
-        setCart({ items: [] }); // Clear cart if no token
-      }
+      const res = await axios.get('/api/cart', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCart(res.data);
       setLoading(false);
     } catch (err) {
       setError(err);
       setLoading(false);
       console.error('Error fetching cart:', err);
     }
-  }, []);
+  }, [isAuthenticated, token]);
 
   useEffect(() => {
     fetchCart();
-  }, [fetchCart]);
+  }, [fetchCart, isAuthenticated]);
 
   const addToCart = useCallback(async (productId, quantity = 1) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      if (!isAuthenticated || !token) {
         alert('Please log in to add items to the cart.');
+        navigate('/login');
         return;
       }
+// ...
 
       const config = {
         headers: {
@@ -58,12 +64,11 @@ export const CartProvider = ({ children }) => {
       console.error('Error adding to cart:', err.response ? err.response.data : err);
       alert('Failed to add item to cart.');
     }
-  }, []);
+  }, [isAuthenticated, token]);
 
   const updateCartItemQuantity = useCallback(async (productId, quantity) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      if (!isAuthenticated || !token) {
         alert('Please log in to modify cart.');
         return;
       }
@@ -81,12 +86,11 @@ export const CartProvider = ({ children }) => {
       console.error('Error updating cart item quantity:', err);
       alert('Failed to update cart item quantity.');
     }
-  }, []);
+  }, [isAuthenticated, token]);
 
   const removeCartItem = useCallback(async (productId) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      if (!isAuthenticated || !token) {
         alert('Please log in to modify cart.');
         return;
       }
@@ -102,7 +106,7 @@ export const CartProvider = ({ children }) => {
       console.error('Error removing cart item:', err);
       alert('Failed to remove item from cart.');
     }
-  }, []);
+  }, [isAuthenticated, token]);
 
   const clearCart = useCallback(async () => {
     setCart({ items: [] }); // Optimistic update
