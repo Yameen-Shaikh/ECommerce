@@ -64,12 +64,12 @@ const Checkout = () => {
       const res = await api.post('/api/orders', orderData);
 
       if (res.data) {
+        alert('Order successfull');
         clearCart();
         navigate('/ordersuccess', { state: { orderId: res.data._id } }); // Pass orderId to the new order success page
       }
     } catch (err) {
       console.error('Checkout error:', err.response ? err.response.data : err);
-      alert('Checkout failed. Please try again.');
     }
   };
 

@@ -87,9 +87,15 @@ export const CartProvider = ({ children }) => {
   }, [isAuthenticated, token]);
 
   const clearCart = useCallback(async () => {
-    setCart({ items: [] }); // Optimistic update
-    // In a real app, you might want to call a backend endpoint to clear the cart
-  }, []);
+    try {
+      if (isAuthenticated && token) {
+        await api.delete('/api/cart');
+      }
+      setCart({ items: [] });
+    } catch (err) {
+      console.error('Error clearing cart:', err);
+    }
+  }, [isAuthenticated, token]);
 
   const cartTotal = cart.items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const cartItemCount = cart.items.reduce((acc, item) => acc + item.qty, 0);

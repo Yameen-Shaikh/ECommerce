@@ -24,9 +24,11 @@ router.post('/', protect, async (req, res) => {
   } else {
     const order = new Order({
       orderItems: orderItems.map((item) => ({
-        ...item,
-        product: item._id, // Map _id to product for reference
-        _id: undefined, // Remove _id from item to avoid Mongoose _id conflicts
+        name: item.name,
+        qty: item.qty,
+        image: item.image,
+        price: item.price,
+        product: item.product,
       })),
       user: req.user._id,
       shippingAddress,

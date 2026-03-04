@@ -95,18 +95,12 @@ const OrderSuccess = () => {
           <p className="text-gray-700">{order.shippingAddress.postalCode}, {order.shippingAddress.country}</p>
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="mt-8 flex justify-center">
           <Link
             to="/"
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105"
           >
             Continue Shopping
-          </Link>
-          <Link
-            to="/myorders" // Assuming you'll have a route for "My Orders"
-            className="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105"
-          >
-            Go to My Orders
           </Link>
         </div>
       </div>

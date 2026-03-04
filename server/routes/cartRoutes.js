@@ -79,6 +79,25 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+// @desc    Clear user's cart
+// @route   DELETE /api/cart
+// @access  Private
+router.delete('/', protect, async (req, res) => {
+  try {
+    let cart = await Cart.findOne({ user: req.user._id });
+
+    if (cart) {
+      cart.items = [];
+      cart = await cart.save();
+      res.status(200).json(cart);
+    } else {
+      res.json({ user: req.user._id, items: [] });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @desc    Remove item from cart
 // @route   DELETE /api/cart/:id
 // @access  Private
