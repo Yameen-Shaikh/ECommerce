@@ -7,7 +7,7 @@ import { useContext } from 'react';
 
 const Checkout = () => {
   const { cart, cartTotal, clearCart } = useCart();
-  const { isAuthenticated, loading, user } = useContext(AuthContext);
+  const { isAuthenticated, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [shippingAddress, setShippingAddress] = useState({

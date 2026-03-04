@@ -5,27 +5,6 @@ import AuthContext from '../../context/AuthContext';
 const Header = () => {
   const { isAuthenticated, logout, user } = useContext(AuthContext);
 
-  const guestLinks = (
-    <>
-      <li>
-        <Link to="/login">Login</Link>
-      </li>
-      <li>
-        <Link to="/register">Register</Link>
-      </li>
-    </>
-  );
-
-  const authLinks = (
-    <>
-      <li>
-        <button onClick={logout} className="hover:text-gray-300">
-          Logout
-        </button>
-      </li>
-    </>
-  );
-
   return (
     <header className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
