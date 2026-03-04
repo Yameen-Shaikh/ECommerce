@@ -13,7 +13,10 @@ This document summarizes the current status of the e-commerce client project, as
 ## Backend Development
 - Created `server/data/products.js` with sample product data and real image URLs.
 - Implemented a basic Express server (`server/server.js`) to serve product data from `/api/products` and `/api/products/:id`.
-- The backend is currently set up to serve static product data and does not yet include full authentication, cart, or checkout functionalities.
+- **Database Connectivity**: 
+    - Implemented a fail-fast database connection logic in `server.js`.
+    - Disabled Mongoose buffering to ensure connection errors are reported immediately.
+    - Added validation for the `MONGODB_URI` environment variable.
 
 ## Frontend Development
 - Set up Tailwind CSS for styling.
@@ -22,9 +25,11 @@ This document summarizes the current status of the e-commerce client project, as
 - Created product components (ProductList, ProductCard, ProductDetails).
 - Created pages (Home, Checkout, OrderSuccess).
 - Implemented routing with React Router.
-- The default route (`/`) now displays the `ProductList` component.
-- Updated `src/data/products.js` with real image URLs (for consistency).
-- Configured `ProductList` and `ProductDetails` components to fetch product data from the backend API (`http://localhost:5000/api/products` and `http://localhost:5000/api/products/:id`).
+- **API Refactoring**:
+    - Created a centralized Axios instance in `src/utils/api.js` to handle base URLs and environment variables.
+    - Integrated `REACT_APP_API_URL` for dynamic backend targeting.
+    - Refactored all components (`ProductList`, `ProductDetails`, `Checkout`, `OrderSuccess`) and Contexts (`AuthContext`, `CartContext`) to use the new `api` utility.
+    - Updated `setAuthToken.js` to globally manage headers via the custom `api` instance.
 - Modified `ProductCard` component:
     - Decreased card size by changing `max-w-sm` to `max-w-xs`.
     - Changed price currency symbol from `$` to `₹`.
@@ -40,15 +45,13 @@ This document summarizes the current status of the e-commerce client project, as
     - Added "Go to My Orders" link.
 
 ## Backend Integration
-- The frontend is now integrated with the newly created backend to fetch product data.
-- **Fixed Authentication State Management**:
-    - Refactored `AuthContext.js` to use a consistent state structure and correctly handle user data during login/register.
-    - Updated `Login.js` and `Register.js` to use the global `login` and `register` functions from `AuthContext`, ensuring immediate state updates across the app.
-    - Modified `Header.js` to reflect the authentication state (shows user greeting and Logout button when logged in).
-    - Added automatic redirection in `Login.js` and `Register.js` if the user is already authenticated.
-    - Improved error handling with visual feedback (alerts) for failed login/registration attempts.
-    - Added success messages (alerts) and redirects:
-        - Successful registration now shows a success alert and redirects to the Login page.
-        - Successful login now shows a success alert and redirects to the Home page.
-    - Updated `CartContext.js` to re-fetch the user's cart whenever the authentication state changes.
-    - Cleaned up redundant token management in `App.js`.
+- The frontend is now integrated with the backend using dynamic routing.
+- **Robust Authentication & State Management**:
+    - **Race Condition Fix**: Refactored `AuthContext.js` to manage `localStorage` and `setAuthToken` directly within action functions.
+    - **Profile Verification**: The `login` function now automatically triggers `loadUser` to verify the user profile.
+    - **Server-Side Improvements**: Updated `authMiddleware.js` to prevent double-response hanging.
+
+## Deployment Strategy
+- **Database**: MongoDB Atlas (Free Cluster) with whitelisted IP access.
+- **Backend**: Render (Web Service) using the `server` directory, configured with `MONGODB_URI` and `JWT_SECRET`.
+- **Frontend**: Vercel (Production Build) pointing to the root directory, using `REACT_APP_API_URL` to link to the Render backend.

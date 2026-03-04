@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import AuthContext from '../../context/AuthContext';
@@ -61,15 +61,7 @@ const Checkout = () => {
         totalPrice: cartTotal, // For now, total price is cart total
       };
 
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const res = await axios.post('/api/orders', orderData, config);
+      const res = await api.post('/api/orders', orderData);
 
       if (res.data) {
         clearCart();

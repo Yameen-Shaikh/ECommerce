@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import setAuthToken from '../utils/setAuthToken';
 
 const AuthContext = createContext();
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       console.log('Fetching user profile...');
-      const res = await axios.get('/api/auth');
+      const res = await api.get('/api/auth');
       console.log('User profile fetched successfully:', res.data);
       dispatch({
         type: 'USER_LOADED',
@@ -89,15 +89,9 @@ export const AuthProvider = ({ children }) => {
 
   // Register User
   const register = useCallback(async (formData) => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
     try {
       console.log('Registering user...', formData);
-      await axios.post('/api/auth/register', formData, config);
+      await api.post('/api/auth/register', formData);
       dispatch({
         type: 'REGISTER_SUCCESS',
       });
@@ -114,15 +108,9 @@ export const AuthProvider = ({ children }) => {
 
   // Login User
   const login = useCallback(async (formData) => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
     try {
       console.log('Logging in user...', formData.email);
-      const res = await axios.post('/api/auth/login', formData, config);
+      const res = await api.post('/api/auth/login', formData);
       console.log('Login response received:', res.data.username);
       
       // SET TOKEN MANUALLY BEFORE DISPATCH/LOADUSER

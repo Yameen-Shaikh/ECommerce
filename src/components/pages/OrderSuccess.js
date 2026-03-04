@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import AuthContext from '../../context/AuthContext';
 import Confetti from 'react-confetti';
 
@@ -22,13 +22,7 @@ const OrderSuccess = () => {
 
     const fetchOrder = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const { data } = await axios.get(`/api/orders/${orderId}`, config);
+        const { data } = await api.get(`/api/orders/${orderId}`);
         setOrder(data);
       } catch (err) {
         console.error('Error fetching order:', err);

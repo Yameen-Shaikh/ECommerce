@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from './AuthContext';
 
@@ -23,11 +23,7 @@ export const CartProvider = ({ children }) => {
 
     setLoading(true);
     try {
-      const res = await axios.get('/api/cart', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.get('/api/cart');
       setCart(res.data);
       setLoading(false);
     } catch (err) {
@@ -48,23 +44,16 @@ export const CartProvider = ({ children }) => {
         navigate('/login');
         return;
       }
-// ...
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const body = JSON.stringify({ productId, quantity });
-      const res = await axios.post('/api/cart', body, config);
+      const body = { productId, quantity };
+      const res = await api.post('/api/cart', body);
       setCart(res.data);
       alert('Item added to cart!');
     } catch (err) {
       console.error('Error adding to cart:', err.response ? err.response.data : err);
       alert('Failed to add item to cart.');
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, navigate]);
 
   const updateCartItemQuantity = useCallback(async (productId, quantity) => {
     try {
@@ -73,14 +62,8 @@ export const CartProvider = ({ children }) => {
         return;
       }
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const body = JSON.stringify({ productId, quantity });
-      const res = await axios.post('/api/cart', body, config);
+      const body = { productId, quantity };
+      const res = await api.post('/api/cart', body);
       setCart(res.data);
     } catch (err) {
       console.error('Error updating cart item quantity:', err);
@@ -95,12 +78,7 @@ export const CartProvider = ({ children }) => {
         return;
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const res = await axios.delete(`/api/cart/${productId}`, config);
+      const res = await api.delete(`/api/cart/${productId}`);
       setCart(res.data);
     } catch (err) {
       console.error('Error removing cart item:', err);

@@ -11,6 +11,11 @@ dotenv.config();
 
 const app = express();
 
+if (!process.env.MONGODB_URI) {
+  console.error('ERROR: MONGODB_URI is not defined in .env file');
+  process.exit(1);
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -18,9 +23,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/cart', cartRoutes);
 
+// Disable buffering to fail fast if connection is not ready
+mongoose.set('bufferCommands', false);
+
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log('MongoDB connected'))
-.catch((err) => console.log(err));
+.catch((err) => {
+  console.error('MongoDB connection error:', err.message);
+  process.exit(1); // Exit if DB connection fails
+});
 
 
 app.get('/api/products', (req, res) => {
